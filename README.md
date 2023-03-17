@@ -8,4 +8,5 @@ This api consists of many endpoints
 /ticket/cancelReservation/:id : query id(reservation id)
 
 
-/voyage/availableSeats
+/voyage/availableSeats : payload takes(from(place), to(place))
+
