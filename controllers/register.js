@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const User = require("../models/User");
-
+require("dotenv").config();
 async function registerUser(req,res){
     try {
         // Check if the user already exists
@@ -10,7 +10,7 @@ async function registerUser(req,res){
         }
   
         // Hash the password
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const hashedPassword = await bcrypt.hash(req.body.password, Number(process.env.SALT));
     
         // Create a new user
         const user = new User({

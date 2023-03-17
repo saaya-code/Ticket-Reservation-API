@@ -35,6 +35,7 @@ const registerUser = require('./controllers/register');
 // Importing routes
 //const mainRoute = require('./routes/mainRoute');
 const ticket = require('./routes/ticket');
+const voyage = require('./routes/voyage');
 
 app.use(bodyParser.json());
 app.use(flash());
@@ -52,6 +53,7 @@ app.use(express.urlencoded({ extended: false }));
 
 //Routes
 app.use("/ticket", ticket);
+app.use("/voyage", voyage);
 
 app.post("/login",passport.authenticate('local',{
   failureFlash: true
@@ -97,6 +99,26 @@ app.post("/sync", async (req, res) => {
   Reservation.syncIndexes();
   res.status(200).send("Synced successfully");
 })
+
+const Voyage = require('./models/Voyage');
+
+app.post("/addVoyage", async (req, res) => {
+  const { train, departure, arrival, from, to } = req.body;
+  const currentTrain = await Train.findOne({ _id: train });
+  if (!currentTrain) {
+    res.status(404).send("Train not found");
+  }
+  const voyage = new Voyage({
+    train: train,
+    departure: departure,
+    arrival: arrival,
+    from: from,
+    to: to,
+    remainingSeats: currentTrain.seats,
+});
+  await voyage.save();
+  res.status(200).send("Voyage added successfully");
+});
 
 app.listen(PORT, () => {
   connectDB(process.env.MONGO_URI)

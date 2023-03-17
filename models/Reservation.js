@@ -11,6 +11,11 @@ const reservationSchema = new mongoose.Schema({
     ref: 'Train',
     required: true,
   },
+  voyage:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Voyage',
+    required: true,
+  },
   seat: {
     type: Number,
     required: true,
