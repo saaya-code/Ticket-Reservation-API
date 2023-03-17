@@ -1,6 +1,6 @@
 // Description: This file is the entry point to our application
 
-// Importing dependencies 
+// Importing dependencies
 const express = require('express');
 const passport = require('passport');
 const mongoose = require('mongoose');
@@ -12,16 +12,13 @@ const flash = require('express-flash');
 const session = require('express-session');
 const getUserByEmail = require('./helpers/getUserByEmail');
 const getUserById = require('./helpers/getUserById');
+const checkAuthenticated  = require('./config/auth.config');
+
 const initilizePassport = require('./config/passport.config');
 // initilizing passportjs
 initilizePassport(passport, getUserByEmail, getUserById);
 
-function checkAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).send("You are not authenticated");
-}
+
 
 
 
@@ -32,8 +29,12 @@ const PORT = process.env.PORT || 5000;
 const connectDB = require('./config/connectDB');
 const registerUser = require('./controllers/register');
 
+
+
+
 // Importing routes
 //const mainRoute = require('./routes/mainRoute');
+const ticket = require('./routes/ticket');
 
 app.use(bodyParser.json());
 app.use(flash());
@@ -49,15 +50,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 
+//Routes
+app.use("/ticket", ticket);
 
 app.post("/login",passport.authenticate('local',{
   failureFlash: true
 }), (req,res) => {
-  res.status(200).send("Authenticated successfully");
+  try{
+    res.status(200).send("Authenticated successfully");
+  } catch (error) {
+    res.status(500).send(error);
+  }
 })
-
-
-
 
 app.post('/register', async (req, res) => {
   registerUser(req, res);
@@ -68,17 +72,12 @@ app.delete("/logout", (req, res) => {
   res.status(200).send("Logged out successfully");
 });
 
-app.get("/user",checkAuthenticated, async (req, res) => {
-  console.log(req.body.email);
-  const user = await getUserByEmail(req.body.email);
-  res.send(user);
-});
 
 
 
 
 
 app.listen(PORT, () => {
-  connectDB(process.env.MONGO_URI)  
+  connectDB(process.env.MONGO_URI)
   console.log(`Server is running on port ${PORT}`);
 });
