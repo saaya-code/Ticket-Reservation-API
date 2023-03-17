@@ -1,29 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
 const checkAuthenticated  = require('../config/auth.config');
-const Reservation = require('../models/Reservation');
 const makeReservation = require('../controllers/makeReservation');
+const cancelReservation = require('../controllers/cancelReservation');
+const getAvailableTickets = require('../controllers/getAvailableTickets');
 
 
-router.post('/makeReservation', checkAuthenticated, (req, res) => {
-    makeReservation(req, res);
+router.post('/makeReservation', checkAuthenticated, async (req, res) => {
+    await makeReservation(req, res);
 });
 
 router.delete("/cancelReservation/:id", checkAuthenticated, async (req, res) => {
-    try{
-        var reservation = await Reservation.findOne({_id: req.params.id, user: req.user._id}) || null;
-        console.log(reservation);
-        if(!reservation){
-            return res.status(404).json({message: 'Reservation not found'});
-        }
-        reservation.status = 'cancelled';
-        reservation.save();
-        return res.status(200).json({message: 'Reservation cancelled'});
-    }catch(err){
-        return res.status(500).json({message: 'Something went wrong'});
-    }
+    await cancelReservation(req,res);
 });
 
+router.get("/getAvailableTickets", checkAuthenticated, async (req, res) => {
+    await getAvailableTickets(req,res);
+});
 
 module.exports = router;
