@@ -16,6 +16,7 @@ const reservationSchema = new mongoose.Schema({
     required: true,
     unique: true,
     autoIncrement: true,
+    default: 1,
   },
   departure: {
     type: Date,
@@ -33,6 +34,14 @@ const reservationSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  from: {
+    type: String,
+    required: true,
+  },
+  to: {
+    type: String,
+    required: true,
   }
 });
 

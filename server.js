@@ -73,9 +73,30 @@ app.delete("/logout", (req, res) => {
 });
 
 
+const Train = require('./models/Train');
+const Reservation = require('./models/Reservation');
+app.post("/addTrain", async (req, res) => {
+  try {
+    const { name, seats, from, to, price } = req.body;
+    const train = new Train({
+      name: name,
+      seats: seats,
+      from: from,
+      to: to,
+      price: price,
+    });
+    await train.save();
+    res.status(200).send("Train added successfully");
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
 
 
-
+app.post("/sync", async (req, res) => {
+  Reservation.syncIndexes();
+  res.status(200).send("Synced successfully");
+})
 
 app.listen(PORT, () => {
   connectDB(process.env.MONGO_URI)

@@ -6,6 +6,7 @@ const TrainSchema = new mongoose.Schema({
         required: [true, 'Name is required'],
         minLength: [3, 'Name must be at least 3 characters long'],
         maxLength: [20, 'Name must be at most 20 characters long'],
+        unique: true,
     },
     from: {
         type: String,
